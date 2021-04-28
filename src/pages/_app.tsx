@@ -2,6 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react"
 
 const theme = {
   
+
 }
 
 function MyApp({ Component, pageProps }) {

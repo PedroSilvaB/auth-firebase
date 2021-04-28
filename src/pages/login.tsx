@@ -1,8 +1,10 @@
 import { Button } from "@chakra-ui/button"
 import { Image } from "@chakra-ui/image"
 import { Input } from "@chakra-ui/input"
-import { AspectRatio, Divider, Flex, Heading, Link, Stack } from "@chakra-ui/layout"
-
+import { AspectRatio, Box, Divider, Flex, Heading, Link, Stack } from "@chakra-ui/layout"
+import { useRouter } from "next/router"
+import { useCallback, useEffect } from "react"
+import { FaArrowRight } from 'react-icons/fa'
 interface Values {
     password: string,
     email: string
@@ -21,20 +23,34 @@ const forms = (event) => {
     console.log(id)
 }
 const Login = ({ }) => {
+    const router = useRouter()
+    const user = true
+    const loading = true
+    const handleSubmit = useCallback((e) => {
+        e.preventDefault()
+
+        router.push('/')
+    }, [])
+
+    useEffect(() => {
+        // Prefetch the page
+        router.prefetch('/')
+    }, [user, loading])
     return (
         <Flex w="100vw" h="100vh" justifyContent="center" alignItems="center">
-            <Stack as="form" onChange={form} onSubmit={forms} spacing={5} w="30rem" shadow="xl" p={["3rem", "5rem"]} m="1rem" rounded="5" bg="whiteAlpha.300" >
-                <AspectRatio ratio={16 / 9}>
-                    <Image src="https://vignette.wikia.nocookie.net/naruto/images/d/dc/Naruto's_Sage_Mode.png/revision/latest?cb=20150124180545" rounded="5" alt="naruto" objectFit="cover" />
-                </AspectRatio>
+
+            <Stack as="form" onChange={form} onSubmit={handleSubmit} justifyContent="space-evenly" spacing={5} w="30rem" minH="80vh" shadow="xl" p={["3rem", "5rem"]} m="1rem" rounded="5" bg="whiteAlpha.100" >
+
                 <Heading>Login</Heading>
 
-                <Input placeholder="Email" id="email" type="email" />
-                <Input placeholder="Senha" id="password" type="password" />
-                <Button type="submit" bg="blue.600">Sing</Button>
+                <Input placeholder="Email" shadow="md" isRequired id="email" type="email" />
+                <Input placeholder="Senha" shadow="md" isRequired id="password" type="password" />
+                <Button fontSize="lg" type="submit" bgGradient="linear(7deg, blue.700, blue.500,blue.300)" shadow="md" p="6" rounded="full" _focus={{ bg: "blue.700" }} _hover={{ bg: "blue.700" }} rightIcon={<FaArrowRight />}>Sing</Button>
 
                 <Divider />
-                <Link>Esquece?</Link>
+                <Box>
+                    <Link rounded="5" fontSize="lg" px="1" href="/">Esquece?</Link>
+                </Box>
             </Stack>
         </Flex>
     )
