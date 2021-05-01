@@ -1,18 +1,16 @@
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { Flex, Heading } from '@chakra-ui/layout';
+import Head from 'next/head';
 
-// Here you would fetch and return the user
-export const useUser = () => ({ user: null, loading: false })
+export default function Home() {
+  return (
+    <>
+      <Head>
+        <title>Home</title>
+      </Head>
+      <Flex flex="1" flexDir="column" h="110vh" justifyContent="center" alignItems="center">
 
-export default function Page() {
-  const { user, loading } = useUser()
-  const router = useRouter()
+        <Heading fontWeight="500" fontSize={["4xl", "6xl"]}>🐱‍🏍 | Bem vindo</Heading>
 
-  useEffect(() => {
-    if (!(user || loading)) {
-      router.push('/login')
-    }
-  }, [user, loading])
-
-  return <p>Redirecting...</p>
+      </Flex>
+    </>)
 }

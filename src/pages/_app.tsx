@@ -1,13 +1,15 @@
 import { ChakraProvider } from "@chakra-ui/react"
-
-const theme = {
-  
-
-}
+import { AuthProvider } from "../contexts/AuthContext"
+import { LayoutProvider } from "../contexts/LayoutContext"
+import { RouterProvider } from "../contexts/RouterContext"
 
 function MyApp({ Component, pageProps }) {
   return <ChakraProvider resetCSS>
-    <Component {...pageProps} />
+    <AuthProvider>
+      <RouterProvider Component={Component}>
+          <Component {...pageProps} />
+      </RouterProvider>
+    </AuthProvider>
   </ChakraProvider>
 }
 
