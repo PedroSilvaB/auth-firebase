@@ -22,6 +22,7 @@ import auth from '../services/auth';
     }
     const signout = () => {
         try {
+            setLoading(true);
             return firebase
                 .auth()
                 .signOut()
