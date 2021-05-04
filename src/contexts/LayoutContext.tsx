@@ -1,14 +1,16 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 import Layout from '../components/Layout';
-import useRoute from './RouterContext';
 
-const LayoutContext = createContext(null);
+interface LayoutContextData{
+
+}
+
+const LayoutContext = createContext({} as LayoutContextData);
 
 
 export const LayoutProvider = ({ children }) => {
-    const { dash } = useRoute()
     return (
-        <LayoutContext.Provider value={{ dash }}>
+        <LayoutContext.Provider value={{ }}>
             <Layout>
                 {children}
             </Layout>

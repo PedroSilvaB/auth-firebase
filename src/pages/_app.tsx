@@ -6,8 +6,10 @@ import { RouterProvider } from "../contexts/RouterContext"
 function MyApp({ Component, pageProps }) {
   return <ChakraProvider resetCSS>
     <AuthProvider>
-      <RouterProvider Component={Component}>
+      <RouterProvider>
+        <LayoutProvider>
           <Component {...pageProps} />
+        </LayoutProvider>
       </RouterProvider>
     </AuthProvider>
   </ChakraProvider>
