@@ -8,13 +8,14 @@ import useAuth from "../hooks/useAuth"
 import { useRouter } from "next/router"
 import { useDisclosure } from "@chakra-ui/hooks"
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/modal"
-import { FormControl, FormLabel } from "@chakra-ui/form-control"
+import { FormControl, FormErrorMessage, FormLabel } from "@chakra-ui/form-control"
 import { useToast } from "@chakra-ui/toast"
 
 const Login = () => {
     const { signIn, sendPasswordResetEmail } = useAuth()
     const { prefetch, push } = useRouter()
     const [user, setUser] = useState<{ email: string, password: string }>()
+    const [formUser, setFormUser] = useState<{ error: { name: string } }>()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
 
@@ -46,17 +47,25 @@ const Login = () => {
                 duration: 10000,
                 isClosable: true,
             })
+
         }
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         try {
             event.preventDefault()
             const { email, password } = user
-            signIn({ email, password })
-        } catch (error) {
-            console.log(error)
-        } finally {
+            await signIn({ email, password })
             push("/dashboard")
+        } catch (error) {
+            console.error(error.message)
+            toast({
+                title: "Email \nou senha invalido!",
+                description: "Verifique suas Informações.",
+                status: "error",
+                position: "top",
+                duration: 10000,
+                isClosable: true
+            })
         }
     }
     useEffect(() => {
@@ -75,9 +84,13 @@ const Login = () => {
                     <Heading fontWeight="700" fontSize="6xl">Login</Heading>
 
                     <Input placeholder="Email" shadow="md" isRequired id="email" type="email" />
-                    <Input placeholder="Senha" shadow="md" isRequired id="password" type="password" name="password" />
+                    <FormControl isInvalid={formUser ? true : false}>
+                        <Input placeholder="Senha" shadow="md" isRequired id="password" type="password" name="password" />
+                        <FormErrorMessage>{formUser?.error.name}</FormErrorMessage>
+                    </FormControl>
                     <Button fontSize="lg" type="submit" bgGradient="linear(7deg, blue.700, blue.500,blue.300)" shadow="md" p="6" rounded="full" _focus={{ bg: "blue.700" }} _hover={{ bg: "blue.700" }} rightIcon={<FaArrowRight />}>Sing</Button>
                     <Divider />
+
                     <Box>
                         <Link as="span" rounded="5" fontSize="lg" px="1" onClick={onOpen}>Esquece!</Link>
                         <Modal

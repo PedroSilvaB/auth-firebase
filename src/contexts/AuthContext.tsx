@@ -1,26 +1,39 @@
 import { createContext, useEffect, useState } from 'react';
-import firebase from '../lib/firebase';
+import firebase from '../lib/firebase'
 import auth from '../services/auth';
+import { UpdateProfile, User } from "../interface"
+import { Flex, Heading } from '@chakra-ui/layout'
+import { useRouter } from 'next/router'
 
-interface User {
-    email: string, password: string
+interface UserPassword {
+    email: string,
+    password: string
 }
 interface AuthContextData {
     signed: boolean,
-    user: object,
+    user: User,
     loading: boolean,
-    signIn({ }: User): Promise<void>,
+    signIn({ }: UserPassword): Promise<void>,
     signOut(): void,
     sendPasswordResetEmail(email: string): Promise<any>,
-    signUp({ }: User)
+    signUp({ }: UserPassword): void,
+    sendEmailVerification(): Promise<void>,
+    updateProfile({ }: UpdateProfile): Promise<void>
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState<User>(null)
     const [loading, setLoading] = useState(true)
+    const { push, pathname } = useRouter()
+    useEffect(() => {
+        if (pathname.match(/^\/dashboard/g) && !user && !loading) {
+            push("/login")
+        }
+    }, [loading, user])
+
 
     useEffect(() => {
         const storegedUser = localStorage.getItem("@PKAuth:user")
@@ -31,7 +44,39 @@ export const AuthProvider = ({ children }) => {
         } else if (loading && !storegedUser && !storegedToken) {
             setLoading(false)
         }
+        const unsubscribe = firebase.auth().onAuthStateChanged((res) => {
+            if (res) {
+                setUser(res);
+                console.log(res)
+                localStorage.setItem("@PKAuth:user", JSON.stringify(res))
+                localStorage.setItem("@PKAuth:token", res.uid)
+            } else {
+                localStorage.removeItem("@PKAuth:user")
+                localStorage.removeItem("@PKAuth:token")
+                setUser(null);
+            }
+        });
+
+        return () => unsubscribe();
     }, [])
+
+    if (loading) {
+        return <Flex flex="1" bg="black" w="100vw" color="white" justifyContent="center" alignItems="center" h="100vh"><Heading fontWeight="900" fontSize={["4xl", "6xl"]}>🐱‍🏍 | Bem vindo ...</Heading></Flex>
+    }
+
+    const updateProfile = async (profile: UpdateProfile) => {
+        firebase
+            .auth()
+            .currentUser
+            .updateProfile({
+                ...profile
+            }).then(function (res) {
+                console.log(res)
+                setUser({ ...user, ...profile })
+            }).catch(function (error) {
+                throw error
+            })
+    }
 
     const signIn = async ({ email, password }) => {
         try {
@@ -42,11 +87,9 @@ export const AuthProvider = ({ children }) => {
                     localStorage.setItem("@PKAuth:user", JSON.stringify(response.user))
                     localStorage.setItem("@PKAuth:token", response.user.uid)
                     setUser(response.user)
-                    console.log(response)
                 })
-
         } catch (error) {
-            console.log(error)
+            throw error
         } finally {
             setLoading(false)
         }
@@ -63,7 +106,7 @@ export const AuthProvider = ({ children }) => {
                     return response.user
                 });
         } catch (error) {
-            console.log(error)
+            throw error
         } finally {
             setLoading(false)
         }
@@ -82,17 +125,16 @@ export const AuthProvider = ({ children }) => {
         }
 
     };
-
-    /* const confirmPasswordReset = (password, code) => {
-        const resetCode = code || getFromQueryString('oobCode');
-
-        return firebase
-            .auth()
-            .confirmPasswordReset(resetCode, password)
-            .then(() => {
-                return true;
-            });
-    }; */
+    const sendEmailVerification = async () => {
+        firebase.auth()
+            .currentUser
+            .sendEmailVerification()
+            .then(function (res) {
+                return res
+            }).catch(function (error) {
+                throw error
+            })
+    }
 
     const signOut = async () => {
         try {
@@ -107,11 +149,12 @@ export const AuthProvider = ({ children }) => {
                     setUser(null)
                 });
         } catch (error) {
-            console.log(error)
+            throw error
         } finally {
             setLoading(false)
         }
     }
+
     return (
         <AuthContext.Provider value={{
             signIn,
@@ -120,7 +163,9 @@ export const AuthProvider = ({ children }) => {
             user,
             loading,
             sendPasswordResetEmail,
-            signUp
+            signUp,
+            sendEmailVerification,
+            updateProfile
         }}>
             {children}
         </AuthContext.Provider>

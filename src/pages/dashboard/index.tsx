@@ -8,7 +8,7 @@ import { useRouter } from "next/router"
 import { Input } from "@chakra-ui/input"
 
 export default function Dashboard() {
-  const { signOut, signed, loading, sendPasswordResetEmail } = useAuth()
+  const { signOut, signed, loading, sendPasswordResetEmail, sendEmailVerification } = useAuth()
   const [email, setEmail] = useState()
   const { push } = useRouter()
 
@@ -45,6 +45,8 @@ export default function Dashboard() {
           <Input type="email" onChange={handleOnChange}></Input>
           <Button onClick={handleSendEmailPasswordReset}>Reset Password</Button>
           <Button onClick={handleSingOut}>Sing Out</Button>
+          <Button onClick={sendEmailVerification}>Verificar email</Button>
+
           <Link as={"/dashboard/users"} href="/dashboard/[...slug]">
             <a>Users</a>
           </Link>

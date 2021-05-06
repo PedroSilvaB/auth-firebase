@@ -1,27 +1,45 @@
 import { Button } from "@chakra-ui/button"
 import { Input } from "@chakra-ui/input"
-import { Box, Divider, Flex, Heading, Link, Stack } from "@chakra-ui/layout"
-import React, { useEffect } from "react"
+import { Divider, Flex, Heading, Stack } from "@chakra-ui/layout"
+import React, { useState } from "react"
 import { FaArrowRight } from 'react-icons/fa'
 import Head from 'next/head'
 import useAuth from "../../hooks/useAuth"
-import { useRouter } from "next/router"
+import { useToast } from "@chakra-ui/toast"
 
 const SignUp = () => {
-    const { signIn, signUp } = useAuth()
-    const { prefetch, push } = useRouter()
+    const { signUp } = useAuth()
+    const [user, setUser] = useState<{ email: string, newPassword: string }>()
+    const toast = useToast()
 
-    const handleChange = (event) => {
-
+    const handleOnChange = (event) => {
+        const value = JSON.parse(`{"${event.target.id}":"${event.target.value}"}`)
+        setUser({ ...user, ...value })
+        console.log(user)
     }
     const handleSubmit = (event) => {
         try {
             event.preventDefault()
-            const [{ email }, { newPassword }] = [...event.currentTarget].filter(({ tagName, id }) => tagName == "INPUT" && id).map(({ id, value }) => JSON.parse(`{"${id}":"${value}"}`))
+            const { email, newPassword } = user
+
             signUp({ email, password: newPassword })
+            toast({
+                title: user.email,
+                description: "Usuario criado!",
+                status: "success",
+                position: "bottom-left",
+                duration: 10000,
+                isClosable: true,
+            })
         } catch (error) {
-            console.log(error)
-        } finally {
+            toast({
+                title: "Algo deu errado",
+                description: error.message,
+                status: "error",
+                position: "bottom-left",
+                duration: 10000,
+                isClosable: true,
+            })
         }
     }
     return (
@@ -31,7 +49,7 @@ const SignUp = () => {
             </Head>
             <Flex w="100vw" h="90vh" bg="black" color="white" justifyContent="center" alignItems="center">
 
-                <Stack as="form" onChange={handleChange} onSubmit={handleSubmit} justifyContent="space-evenly" spacing={6} w="30rem" shadow="xl" p={["2rem", "4rem"]} m="1rem" rounded="5" bg="whiteAlpha.100" >
+                <Stack as="form" onChange={handleOnChange} onSubmit={handleSubmit} justifyContent="space-evenly" spacing={6} w="30rem" shadow="xl" p={["2rem", "4rem"]} m="1rem" rounded="5" bg="whiteAlpha.100" >
 
                     <Heading fontWeight="700" fontSize="6xl">Sign Up</Heading>
 
