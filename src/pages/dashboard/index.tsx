@@ -3,20 +3,12 @@ import { Box, Flex, Stack } from "@chakra-ui/layout"
 import useAuth from "../../hooks/useAuth"
 import Link from 'next/link'
 import Head from "next/head"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
+import { useState } from "react"
 import { Input } from "@chakra-ui/input"
 
 export default function Dashboard() {
-  const { signOut, signed, loading, sendPasswordResetEmail, sendEmailVerification } = useAuth()
+  const { signOut, sendPasswordResetEmail, sendEmailVerification } = useAuth()
   const [email, setEmail] = useState()
-  const { push } = useRouter()
-
-  useEffect(() => {
-    if (!(signed || loading)) {
-      push('/login')
-    }
-  }, [signed, loading])
 
   function handleSingOut() {
     signOut()
