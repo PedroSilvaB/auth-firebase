@@ -23,7 +23,6 @@ const Login = () => {
     const handleOnChange = (event) => {
         const value = JSON.parse(`{"${event.target.id}":"${event.target.value}"}`)
         setUser({ ...user, ...value })
-        console.log(user)
     }
     const handleSendPasswordReset = async () => {
         try {

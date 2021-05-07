@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 import firebase from '../lib/firebase'
 import { UpdateProfile, User } from "../interface"
-import { Flex, Heading } from '@chakra-ui/layout'
 
 interface UserPassword {
     email: string,
@@ -41,14 +40,6 @@ export const AuthProvider = ({ children }) => {
         return () => unsubscribe();
     }, [])
 
-    if (loading) {
-        return (
-            <Flex flex="1" bg="black" w="100vw" color="white" justifyContent="center" alignItems="center" h="100vh">
-                <Heading fontWeight="900" fontSize={["4xl", "6xl"]}>🐱‍🏍 | Bem vindo ...</Heading>
-            </Flex>
-        )
-    }
-
     const updateProfile = async (profile: UpdateProfile) => {
         firebase
             .auth()
@@ -84,7 +75,6 @@ export const AuthProvider = ({ children }) => {
                 .createUserWithEmailAndPassword(email, password)
                 .then((response) => {
                     setUser(response.user)
-                    localStorage.setItem('@PKAuth:user', JSON.stringify(response.user))
                 })
         } catch (error) {
             throw error
@@ -101,7 +91,6 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             throw error
         }
-
     }
 
     const sendEmailVerification = async () => {
