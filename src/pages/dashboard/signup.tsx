@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button"
 import { Input } from "@chakra-ui/input"
 import { Divider, Flex, Heading, Stack } from "@chakra-ui/layout"
-import React, { useState } from "react"
+import React, { FormEvent, useState } from "react"
 import { FaArrowRight } from 'react-icons/fa'
 import Head from 'next/head'
 import useAuth from "../../hooks/useAuth"
@@ -12,12 +12,12 @@ const SignUp = () => {
     const [user, setUser] = useState<{ email: string, newPassword: string }>()
     const toast = useToast()
 
-    const handleOnChange = (event) => {
+    const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = JSON.parse(`{"${event.target.id}":"${event.target.value}"}`)
         setUser({ ...user, ...value })
         console.log(user)
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: FormEvent) => {
         try {
             event.preventDefault()
             const { email, newPassword } = user

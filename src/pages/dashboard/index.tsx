@@ -3,18 +3,18 @@ import { Box, Flex, Stack } from "@chakra-ui/layout"
 import useAuth from "../../hooks/useAuth"
 import Link from 'next/link'
 import Head from "next/head"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Input } from "@chakra-ui/input"
 
 export default function Dashboard() {
   const { signOut, sendPasswordResetEmail, sendEmailVerification } = useAuth()
-  const [email, setEmail] = useState()
+  const [email, setEmail] = useState<string>()
 
   function handleSingOut() {
     signOut()
   }
-  function handleOnChange(e) {
-    setEmail(e.target.value)
+  function handleOnChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setEmail(event.target.value)
   }
   function handleSendEmailPasswordReset() {
     sendPasswordResetEmail(email)
